@@ -27,8 +27,10 @@ import {
   fetchPokemonById,
   guessFail,
   guessSuccess,
+  incrementCurrentRound,
   resetGuess,
   selectGuess,
+  setGameStatus,
 } from "./GuessSlice";
 
 const Guess = () => {
@@ -60,6 +62,13 @@ const Guess = () => {
   const handleNext = () => {
     dispatch(resetGuess());
     dispatch(changePlayer());
+    if (players.currentPlayer === players.count - 1) {
+      if (guess.currentRound === guess.totalRounds) {
+        dispatch(setGameStatus("ended"));
+      } else {
+        dispatch(incrementCurrentRound());
+      }
+    }
   };
 
   const handleStartOver = () => {
@@ -83,6 +92,10 @@ const Guess = () => {
   }, [fetchAllStatus, fetchOneStatus, dispatch]);
 
   useEffect(() => {
+    if (guess.gameStatus === "ended") navigate("/scores");
+  }, [guess.gameStatus]);
+
+  useEffect(() => {
     if (players.players.length < 1) navigate("/");
   }, [players]);
 
@@ -97,7 +110,15 @@ const Guess = () => {
       <Paper>
         <Box py={1} px={8}>
           <Grid container alignItems={"center"} justifyContent="space-between">
-            <Typography variant="overline">Scoreboard</Typography>
+            <Typography variant="overline">
+              {guess.totalRounds > 0 ? "Scoreboard" : "Practice Mode"}
+            </Typography>
+
+            {guess.totalRounds > 0 && (
+              <Typography>
+                Round {guess.currentRound}/{guess.totalRounds}
+              </Typography>
+            )}
             <Grid item>
               <Grid container columnGap={4}>
                 {players.players.map((player) => (
@@ -111,11 +132,12 @@ const Guess = () => {
                       padding: "0 .5rem",
                     }}
                   >
-                    {player.name}: {player.score} {}
+                    {player.name} {guess.totalRounds > 0 && player.score} {}
                   </Typography>
                 ))}
               </Grid>
             </Grid>
+
             <Button size="small" variant="outlined" onClick={handleStartOver}>
               Start Over
             </Button>

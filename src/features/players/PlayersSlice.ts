@@ -66,6 +66,17 @@ export const playersSlice = createSlice({
         currentPlayer: newCurrent,
       };
     },
+    resetScores: (state) => {
+      const newPlayers = state.players.map((player) => ({
+        ...player,
+        score: 0,
+      }));
+      return {
+        ...state,
+        players: newPlayers,
+      };
+    },
+    changeGameRounds: (state, action: PayloadAction<number>) => {},
   },
 });
 
@@ -73,6 +84,7 @@ export const {
   addPlayer,
   removePlayer,
   incrementScore,
+  resetScores,
   changePlayer,
   resetPlayers,
 } = playersSlice.actions;

@@ -4,3 +4,5 @@ export const LIGHT_BLUE = "#2a75bb";
 export const BLUE = "#3B4CCA";
 export const RED = "#CC0000";
 export const LIGHT_RED = "#FF0000";
+
+export const POKEMON_SOLID = '"Pokemon Solid", sans-serif';

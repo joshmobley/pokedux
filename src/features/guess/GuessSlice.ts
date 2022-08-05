@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NamedAPIResource, Pokemon, PokemonClient } from "pokenode-ts";
 import { RootState } from "../../app/store";
 
+type GameStatus = "lobby" | "playing" | "ended";
+
 interface GuessState {
   pokemon: Pokemon[];
   correctAnswer: number;
@@ -10,6 +12,9 @@ interface GuessState {
   fetchAllStatus: "idle" | "loading" | "succeeded" | "failed";
   fetchOneStatus: "idle" | "loading" | "succeeded" | "failed";
   error: string | undefined;
+  totalRounds: number;
+  currentRound: number;
+  gameStatus: GameStatus;
 }
 
 const initialState: GuessState = {
@@ -20,6 +25,9 @@ const initialState: GuessState = {
   fetchAllStatus: "idle",
   fetchOneStatus: "idle",
   error: undefined,
+  totalRounds: 5,
+  currentRound: 1,
+  gameStatus: "lobby",
 };
 
 const api = new PokemonClient();
@@ -38,6 +46,18 @@ export const guessSlice = createSlice({
       state.guessStatus = null;
       state.fetchAllStatus = "idle";
       state.fetchOneStatus = "idle";
+    },
+    setTotalRounds: (state, action: PayloadAction<number>) => {
+      state.totalRounds = action.payload;
+    },
+    incrementCurrentRound: (state) => {
+      state.currentRound++;
+    },
+    resetCurrentRound: (state) => {
+      state.currentRound = 1;
+    },
+    setGameStatus: (state, action: PayloadAction<GameStatus>) => {
+      state.gameStatus = action.payload;
     },
   },
   extraReducers(builder) {
@@ -69,9 +89,21 @@ export const guessSlice = createSlice({
   },
 });
 
-export const { guessSuccess, guessFail, resetGuess } = guessSlice.actions;
+export const {
+  guessSuccess,
+  guessFail,
+  resetGuess,
+  setTotalRounds,
+  setGameStatus,
+  incrementCurrentRound,
+  resetCurrentRound,
+} = guessSlice.actions;
 
 export const selectGuess = (state: RootState) => state.guess;
+export const selectGameRounds = (state: RootState) => ({
+  currentRound: state.guess.currentRound,
+  totalRounds: state.guess.totalRounds,
+});
 
 export const fetchPokemon = createAsyncThunk(
   "pokemon/fetchPokemon",
