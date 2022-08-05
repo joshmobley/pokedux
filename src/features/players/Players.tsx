@@ -32,7 +32,6 @@ const Players = () => {
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
   const gameRounds = useAppSelector(selectGameRounds);
-  console.log("rounds", gameRounds);
 
   const dispatch = useAppDispatch();
   const players = useAppSelector(selectPlayers);
